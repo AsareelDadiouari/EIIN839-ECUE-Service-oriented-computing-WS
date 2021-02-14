@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Collections;
 
 namespace BasicServerHTTPlistener
 {
@@ -10,23 +11,15 @@ namespace BasicServerHTTPlistener
     {
         private static void Main(string[] args)
         {
-            
-
             if (!HttpListener.IsSupported)
             {
                 Console.WriteLine("A more recent Windows version is required to use the HttpListener class.");
                 return;
             }
-
+ 
+ 
             // Create a listener.
             HttpListener listener = new HttpListener();
-
-            // Trap Ctrl-C and exit 
-            Console.CancelKeyPress += delegate
-            {
-                listener.Stop();
-                System.Environment.Exit(0);
-            };
 
             // Add the prefixes.
             if (args.Length != 0)
@@ -56,6 +49,7 @@ namespace BasicServerHTTPlistener
                 // Note: The GetContext method blocks while waiting for a request.
                 HttpListenerContext context = listener.GetContext();
                 HttpListenerRequest request = context.Request;
+                Header header = new Header(request);
 
                 string documentContents;
                 using (Stream receiveStream = request.InputStream)
@@ -65,8 +59,18 @@ namespace BasicServerHTTPlistener
                         documentContents = readStream.ReadToEnd();
                     }
                 }
+                header.printAllHeader();
+                header.printHeader(HttpRequestHeader.ContentType); //MIME
+                header.printHeader(HttpRequestHeader.Cookie); //Cookie
+                header.printHeader(HttpRequestHeader.UserAgent); // L’agent utilisateur demandeur
+                header.printHeader(HttpRequestHeader.AcceptEncoding); //  les encodages de contenu admis pour la réponse
+                header.printHeader(HttpRequestHeader.Authorization); // les informations d’identification que le client doit présenter pour s’authentifier auprès du serveur
+                header.printHeader(HttpRequestHeader.ContentLanguage); // langages naturels préférés pour la réponse
+                header.printHeader(HttpRequestHeader.AcceptCharset); //les jeux de caractères admis pour la réponse
+                header.printHeader(HttpRequestHeader.AcceptCharset); // le jeu de méthodes HTTP pris en charge
                 Console.WriteLine($"Received request for {request.Url}");
                 Console.WriteLine(documentContents);
+     
 
                 // Obtain a response object.
                 HttpListenerResponse response = context.Response;
@@ -83,6 +87,28 @@ namespace BasicServerHTTPlistener
             }
             // Httplistener neither stop ...
             // listener.Stop();
+        }
+    }
+    public class Header
+    {
+        private HttpListenerRequest listenerRequest;
+
+        public Header(HttpListenerRequest req)
+        {
+            this.listenerRequest = req;
+        }
+
+        public void printAllHeader()
+        {
+            foreach (string str in Enum.GetNames(typeof(HttpRequestHeader)))
+            {
+                Console.WriteLine(str + ": " + this.listenerRequest.Headers[str]);
+            }
+        }
+
+        public void printHeader(HttpRequestHeader req)
+        {
+            Console.WriteLine($"{req}: { this.listenerRequest.Headers[req.ToString()]}");
         }
     }
 }
