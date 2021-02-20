@@ -12,7 +12,7 @@ class Program
         //
         ProcessStartInfo start = new ProcessStartInfo();
         start.FileName = @"C:\Users\dyiem\OneDrive\Bureau\Cours SI4\Semestre 8\Service oriented computing\TD\Mon premier serveur web dans mon serveur TCP-IP Socket\Forked\eiin839\TD2\WebDynamic\ExecTest\bin\Debug\ExecTest.exe"; // Specify exe name.
-        start.Arguments = "http://localhost:8080/liste/users/1?name=robert&surname=richard&age=33"; // Specify arguments.
+        start.Arguments = "http://localhost:8080/liste/users/myMethod?param1=robert&param2=richard"; // Specify arguments.
         start.UseShellExecute = false; 
         start.RedirectStandardOutput = true;
         //

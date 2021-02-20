@@ -10,7 +10,7 @@ namespace Methode
     {
         static void Main(string[] args)
         {
-            var html = (args.Length >= 1) ? string.Join(" ", args) : "Vous n'avez aucun arguments";
+            var html = (args.Length >= 1) ? "External :" + string.Join(" ", args) : "Vous n'avez aucun arguments";
             Console.WriteLine(html);
         }
     }
