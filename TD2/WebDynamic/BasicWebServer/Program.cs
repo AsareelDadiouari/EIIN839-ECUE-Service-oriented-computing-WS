@@ -5,6 +5,8 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Diagnostics;
+using System.Reflection;
+
 
 namespace BasicServerHTTPlistener
 {
@@ -63,7 +65,6 @@ namespace BasicServerHTTPlistener
                 // Note: The GetContext method blocks while waiting for a request.
                 HttpListenerContext context = listener.GetContext();
                 HttpListenerRequest request = context.Request;
-                Mymethods mymethods = new Mymethods(HttpUtility.ParseQueryString(request.Url.Query).Get("name"), HttpUtility.ParseQueryString(request.Url.Query).Get("surname"));
 
                 string documentContents;
                 using (Stream receiveStream = request.InputStream)
@@ -88,33 +89,44 @@ namespace BasicServerHTTPlistener
                 //get path in url 
                 Console.WriteLine(request.Url.LocalPath);
 
+                //parse params in url
+                string param1 = HttpUtility.ParseQueryString(request.Url.Query).Get("param1");
+                string param2 = HttpUtility.ParseQueryString(request.Url.Query).Get("param2");
+
+                Type type = typeof(Mymethods);
+                Mymethods c = new Mymethods(param1, param2);
+                string responseString = "";
+
                 // parse path in url 
                 foreach (string str in request.Url.Segments)
                 {
-                    Console.WriteLine(str);
+                    if (str.ToLower() == "mymethod")
+                    {
+                        MethodInfo mymethod = type.GetMethod("mymethod");
+                        responseString = (string)mymethod.Invoke(c, null);
+                        Console.WriteLine(responseString);
+                    }
                 }
 
                 //get params un url. After ? and between &
 
                 Console.WriteLine(request.Url.Query);
 
-                //parse params in url
-                Console.WriteLine("param1 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("name"));
-                Console.WriteLine("param2 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("surname"));
-                Console.WriteLine("param3 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("age"));
-                Console.WriteLine("param4 = " + HttpUtility.ParseQueryString(request.Url.Query).Get("param4"));
-
                 //
                 Console.WriteLine(documentContents);
 
                 // Call External Mehtod
-                mymethods.callExternalMethode();
+                if (!request.Url.LocalPath.Contains("myMethod"))
+                {
+                    MethodInfo external = type.GetMethod("callExternalMethode");
+                    external.Invoke(c, null);
+                }
+
 
                 // Obtain a response object.
                 HttpListenerResponse response = context.Response;
 
                 // Construct a response.
-                string responseString = mymethods.mymethod();
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                 // Get a response stream and write the response to it.
                 response.ContentLength64 = buffer.Length;
@@ -134,7 +146,8 @@ namespace BasicServerHTTPlistener
 
         public Mymethods(string param1, string param2)
         {
-            this.param1 = param1; this.param2 = param2;
+            this.param1 = param1;
+            this.param2 = param2;
         }
 
         public string mymethod()
@@ -147,7 +160,7 @@ namespace BasicServerHTTPlistener
             ProcessStartInfo start = new ProcessStartInfo();
             string filename = @"C:\Users\dyiem\OneDrive\Bureau\Cours SI4\Semestre 8\Service oriented computing\TD\Mon premier serveur web dans mon serveur TCP-IP Socket\Forked\eiin839\TD2\WebDynamic\Methode\bin\Debug\Methode.exe";
             start.FileName = filename;
-            string html = "<HTML><BODY> <p>Name: " + param1 + "<p> <p> Surname: " + param2 + "<p>  </ BODY ></ HTML >";
+            string html = "<HTML><BODY> <p>Name: " + this.param1 + "<p> <p> Surname: " + this.param2 + "<p>  </ BODY ></ HTML >";
             start.Arguments = html;
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;

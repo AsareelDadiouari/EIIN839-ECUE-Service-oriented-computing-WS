@@ -67,7 +67,7 @@ namespace BasicServerHTTPlistener
                 header.printHeader(HttpRequestHeader.Authorization); // les informations d’identification que le client doit présenter pour s’authentifier auprès du serveur
                 header.printHeader(HttpRequestHeader.ContentLanguage); // langages naturels préférés pour la réponse
                 header.printHeader(HttpRequestHeader.AcceptCharset); //les jeux de caractères admis pour la réponse
-                header.printHeader(HttpRequestHeader.AcceptCharset); // le jeu de méthodes HTTP pris en charge
+                header.printHeader(HttpRequestHeader.Allow); // le jeu de méthodes HTTP pris en charge
                 Console.WriteLine($"Received request for {request.Url}");
                 Console.WriteLine(documentContents);
      
