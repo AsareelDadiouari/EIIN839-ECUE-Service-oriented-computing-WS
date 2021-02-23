@@ -92,10 +92,10 @@ namespace BasicServerHTTPlistener
                 //parse params in url
                 string param1 = HttpUtility.ParseQueryString(request.Url.Query).Get("param1");
                 string param2 = HttpUtility.ParseQueryString(request.Url.Query).Get("param2");
+                string responseString = "";
 
                 Type type = typeof(Mymethods);
                 Mymethods c = new Mymethods(param1, param2);
-                string responseString = "";
 
                 // parse path in url 
                 foreach (string str in request.Url.Segments)
@@ -127,6 +127,7 @@ namespace BasicServerHTTPlistener
                 HttpListenerResponse response = context.Response;
 
                 // Construct a response.
+                responseString = c.mymethod();
                 byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
                 // Get a response stream and write the response to it.
                 response.ContentLength64 = buffer.Length;
