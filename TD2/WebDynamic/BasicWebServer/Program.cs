@@ -74,7 +74,7 @@ namespace BasicServerHTTPlistener
                         documentContents = readStream.ReadToEnd();
                     }
                 }
-                
+
                 // get url 
                 Console.WriteLine($"Received request for {request.Url}");
 
@@ -108,6 +108,7 @@ namespace BasicServerHTTPlistener
                     }
                 }
 
+                string[] tab = {param1, param2};
                 //get params un url. After ? and between &
 
                 Console.WriteLine(request.Url.Query);
